@@ -16,7 +16,6 @@ class GLView : GLSurfaceView {
   constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
 
     setEGLContextFactory(ContextFactory())
-    setRenderer(MegaRenderer(emptyList()))
   }
 
   private class ContextFactory : GLSurfaceView.EGLContextFactory {
