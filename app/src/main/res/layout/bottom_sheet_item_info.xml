@@ -14,9 +14,7 @@
         android:layout_height="wrap_content"
         android:background="@color/background"
         android:orientation="vertical"
-        android:paddingBottom="24dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp">
+        android:paddingBottom="24dp">
 
         <TextView
             android:id="@+id/item_title"
@@ -28,7 +26,9 @@
             android:textColor="@color/title"
             android:textSize="24sp"
             android:textStyle="bold"
-            tools:text="Стул разработчика" />
+            tools:text="Стул разработчика"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"/>
 
         <TextView
             android:id="@+id/item_subtitle"
@@ -37,6 +37,8 @@
             android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:maxLines="2"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
             android:textColor="@color/subtitle"
             tools:text="Четыре исследователя обнаружили этот стул в 201 кабинете Фабрики, в 2017 году." />
 
@@ -44,6 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
             android:background="@color/divider" />
 
         <TextView
@@ -52,7 +56,9 @@
             android:layout_marginTop="24dp"
             android:text="Описание"
             android:textColor="@color/title"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"/>
 
         <TextView
             android:id="@+id/item_description"
@@ -60,34 +66,51 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:textColor="@color/text"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
             tools:text="Этот стул примичателен тем, что на нём сидел один из разработчиков этого приложения. Делал он это с 27.05.2017 по 28.05.2017, после чего связь со стулом была потеряна и они больше не виделись." />
 
+        <LinearLayout
+            android:id="@+id/photo_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="24dp"
-            android:background="@color/divider" />
+            android:background="@color/divider"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"/>
 
         <TextView
+            android:id="@+id/photo_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Фото"
             android:textColor="@color/title"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"/>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/photo_recycler"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="120dp"
             android:layout_marginTop="24dp"
-            android:clipToPadding="true" />
+            android:clipToPadding="true"
+            android:paddingLeft="24dp"/>
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="24dp"
-            android:background="@color/divider" />
+            android:background="@color/divider"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -95,13 +118,17 @@
             android:layout_marginTop="24dp"
             android:text="В социальных сетях"
             android:textColor="@color/title"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="24dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp">
 
             <ImageView
                 android:id="@+id/instagram_button"

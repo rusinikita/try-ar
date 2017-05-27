@@ -30,12 +30,12 @@ class MainActivity : Activity() {
 
     bottomSheet = findViewById(R.id.bottom_sheet) as NestedScrollView
     val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-    iteminfoDelegate = ItemInfoDelegate(bottomSheet, bottomSheetBehavior)
+    iteminfoDelegate = ItemInfoDelegate(bottomSheet, bottomSheetBehavior, this)
     iteminfoDelegate.init()
 
     testButton = findViewById(R.id.testButton) as FloatingActionButton
     testButton.setOnClickListener {
-      Events.recognitions.onNext("test")
+      Events.recognitions.onNext("cheer")
     }
 
     glView = findViewById(R.id.gl_view) as GLView
