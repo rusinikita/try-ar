@@ -5,7 +5,7 @@ public class Trilateration {
     private double d;
     private double j;
 
-    Trilateration (double d, double j) {
+   public Trilateration (double d, double j) {
         this.d = d;
         this.j = j;
     }
