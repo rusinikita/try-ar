@@ -19,11 +19,11 @@ import javax.microedition.khronos.opengles.GL10
 
 class MegaRenderer(private val activity: Activity,
                    private val session: SampleApplicationSession) : GLSurfaceView.Renderer, SampleAppRendererControl {
-  lateinit var textures: Vector<Texture>
+  var textures: Vector<Texture> = Vector()
 
-  private lateinit var vuforiaAppSession: SampleApplicationSession
-  private lateinit var mSampleAppRenderer: SampleAppRenderer
-  private lateinit var mActivity: Activity
+  // SampleAppRenderer used to encapsulate the use of RenderingPrimitives setting
+  // the device mode AR/VR and stereo mode
+  private var mSampleAppRenderer = SampleAppRenderer(this, activity, Device.MODE.MODE_AR, false, .01f, 100f)
 
   private var shaderProgramID: Int = 0
   private var vertexHandle: Int = 0
@@ -34,9 +34,9 @@ class MegaRenderer(private val activity: Activity,
 
   private var mRenderer: Renderer? = null
 
-  private var t0: Double = 0.toDouble()
+  private var t0: Double = -1.0
 
-  private lateinit var mPlaneObj: Plane
+  private val mPlaneObj = Plane()
 
   private var mIsActive = false
 
@@ -44,22 +44,13 @@ class MegaRenderer(private val activity: Activity,
   private val VUMARK_SCALE = 1.02f
   private var currentVumarkIdOnCard: String? = null
 
-  init {
-    t0 = -1.0
-    mPlaneObj = Plane()
-
-    // SampleAppRenderer used to encapsulate the use of RenderingPrimitives setting
-    // the device mode AR/VR and stereo mode
-    mSampleAppRenderer = SampleAppRenderer(this, mActivity, Device.MODE.MODE_AR, false, .01f, 100f)
-  }
-
   // Called when the surface is created or recreated.
   override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
     Log.d("", "GLRenderer.onSurfaceCreated")
 
     // Call Vuforia function to (re)initialize rendering after first use
     // or after OpenGL ES context was lost (e.g. after onPause/onResume):
-    vuforiaAppSession.onSurfaceCreated()
+    session.onSurfaceCreated()
 
     mSampleAppRenderer.onSurfaceCreated()
   }
@@ -78,7 +69,7 @@ class MegaRenderer(private val activity: Activity,
     Log.d("", "GLRenderer.onSurfaceChanged")
 
     // Call Vuforia function to handle render surface size changes:
-    vuforiaAppSession.onSurfaceChanged(width, height)
+    session.onSurfaceChanged(width, height)
 
     // RenderingPrimitives to be updated when some rendering change is done
     mSampleAppRenderer.onConfigurationChanged(mIsActive)
@@ -91,10 +82,7 @@ class MegaRenderer(private val activity: Activity,
   private fun initRendering() {
     mRenderer = Renderer.getInstance()
 
-    GLES20.glClearColor(0.0f, 0.0f, 0.0f, if (Vuforia.requiresAlpha())
-      0.0f
-    else
-      1.0f)
+    GLES20.glClearColor(0.0f, 0.0f, 0.0f, if (Vuforia.requiresAlpha()) 0.0f else 1.0f)
 
     for (t in textures) {
       GLES20.glGenTextures(1, t.mTextureID, 0)
@@ -198,7 +186,6 @@ class MegaRenderer(private val activity: Activity,
           val instanceImage = vmTgt.instanceImage
 
           if (!markerValue.equals(currentVumarkIdOnCard, ignoreCase = true)) {
-            // TODO hide card
             blinkVumark(true)
           }
         }
@@ -260,8 +247,8 @@ class MegaRenderer(private val activity: Activity,
     if (gotVuMark) {
       // If we have a detection, let's make sure
       // the card is visible
-      // TODO show mark info
       currentVumarkIdOnCard = markerValue
+      // TODO show mark info
     } else {
       // We reset the state of the animation so that
       // it triggers next time a vumark is detected
