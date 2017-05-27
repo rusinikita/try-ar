@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.nikita.tryar"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -34,6 +34,8 @@ dependencies {
 
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    compile 'org.altbeacon:android-beacon-library:2.10'
 
     compile files("vuforia/Vuforia.jar")
 }
