@@ -5,6 +5,7 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.util.Log
+import com.nikita.ar.from_sample.Plane
 import com.nikita.ar.from_sample.SampleAppRenderer
 import com.nikita.ar.from_sample.SampleAppRendererControl
 import com.nikita.ar.from_sample.SampleApplicationSession
