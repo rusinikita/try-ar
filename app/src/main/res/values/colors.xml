@@ -3,4 +3,9 @@
     <color name="colorPrimary">#16748e</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#b13f66</color>
+
+    <!--Bottom sheet-->
+    <color name="background">#ffffff</color>
+    <color name="title">#151515</color>
+    <color name="subtitle">#262626</color>
 </resources>
