@@ -6,6 +6,8 @@
 
     <!--Bottom sheet-->
     <color name="background">#ffffff</color>
-    <color name="title">#151515</color>
-    <color name="subtitle">#262626</color>
+    <color name="divider">#bcbcbc</color>
+    <color name="title">#454545</color>
+    <color name="subtitle">#454545</color>
+    <color name="text">#646464</color>
 </resources>
