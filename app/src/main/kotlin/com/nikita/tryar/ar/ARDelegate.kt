@@ -2,13 +2,16 @@ package com.nikita.tryar.ar
 
 import android.app.Activity
 import android.opengl.GLSurfaceView
+import android.view.View
 import com.nikita.ar.from_sample.SampleApplicationControl
 import com.nikita.ar.from_sample.SampleApplicationException
+import com.nikita.ar.from_sample.SampleApplicationSession
 import com.vuforia.State
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class ARDelegate(val activity: Activity, val glView: GLView) : SampleApplicationControl {
+class ARDelegate(private val activity: Activity, private val glView: GLView, private val progress: View) : SampleApplicationControl {
+  val vuforiaAppSession = SampleApplicationSession(this)
 
   fun onCreate() {
     glView.setRenderer(object : GLSurfaceView.Renderer {

@@ -5,14 +5,15 @@ import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.view.View
-import com.nikita.tryar.ar.ARDelegate
 import android.widget.LinearLayout
+import com.nikita.tryar.ar.ARDelegate
 import com.nikita.tryar.ar.GLView
 import com.nikita.tryar.item_info.ItemInfoDelegate
 import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : Activity() {
   private lateinit var glView: GLView
+  private lateinit var progress: View
   private lateinit var arDelegate: ARDelegate
 
   private lateinit var bottomSheet: LinearLayout
@@ -37,7 +38,8 @@ class MainActivity : Activity() {
     }
 
     glView = findViewById(R.id.gl_view) as GLView
-    arDelegate = ARDelegate(this, glView)
+    progress = findViewById(R.id.progress_bar) as View
+    arDelegate = ARDelegate(this, glView, progress)
     arDelegate.onCreate()
   }
 
