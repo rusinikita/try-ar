@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.NestedScrollView
 import android.view.WindowManager
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.nikita.tryar.ar.ARDelegate
 import com.nikita.tryar.ar.GLView
@@ -14,7 +15,7 @@ import com.nikita.tryar.item_info.ItemInfoDelegate
 import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : Activity() {
-  private lateinit var glView: GLView
+  private lateinit var glViewContainer: ViewGroup
   private lateinit var progress: View
   private lateinit var arDelegate: ARDelegate
 
@@ -39,9 +40,9 @@ class MainActivity : Activity() {
       Events.recognitions.onNext("cheer")
     }
 
-    glView = findViewById(R.id.gl_view) as GLView
+    glViewContainer = findViewById(R.id.gl_view_container) as ViewGroup
     progress = findViewById(R.id.progress_bar) as View
-    arDelegate = ARDelegate(this, glView, progress)
+    arDelegate = ARDelegate(this, glViewContainer, progress)
     arDelegate.onCreate()
   }
 

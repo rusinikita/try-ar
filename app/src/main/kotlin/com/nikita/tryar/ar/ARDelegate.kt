@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import com.nikita.ar.from_sample.SampleApplicationControl
 import com.nikita.ar.from_sample.SampleApplicationException
 import com.nikita.ar.from_sample.SampleApplicationSession
@@ -12,10 +13,11 @@ import com.vuforia.*
 import com.vuforia.CameraDevice.CAMERA_DIRECTION
 import java.util.*
 
-class ARDelegate(private val activity: Activity, private val glView: GLView, private val progress: View) : SampleApplicationControl {
+class ARDelegate(private val activity: Activity, private val glViewContainer: ViewGroup, private val progress: View) : SampleApplicationControl {
   private val vuforiaAppSession = SampleApplicationSession(this)
   private val textures = Vector<Texture>()
-  private lateinit var renderer: MegaRenderer
+  private var glView: GLView? = null
+  private var renderer: MegaRenderer? = null
   private var currentDataset: DataSet? = null
 
   fun onCreate() {
@@ -33,9 +35,10 @@ class ARDelegate(private val activity: Activity, private val glView: GLView, pri
 
   // Initializes AR application components.
   private fun initApplicationAR() {
-    renderer.textures = textures
+    glView = GLView(activity)
     renderer = MegaRenderer(activity, vuforiaAppSession)
-    glView.setRenderer(renderer)
+    renderer?.textures = textures
+    glView?.setRenderer(renderer)
   }
 
 
@@ -45,11 +48,11 @@ class ARDelegate(private val activity: Activity, private val glView: GLView, pri
     } catch (e: SampleApplicationException) {
       Log.e("", e.string)
     }
-    glView.onResume()
+    glView?.onResume()
   }
 
   fun onPause() {
-    glView.onPause()
+    glView?.onPause()
     try {
       vuforiaAppSession.pauseAR()
     } catch (e: SampleApplicationException) {
@@ -133,13 +136,15 @@ class ARDelegate(private val activity: Activity, private val glView: GLView, pri
       throw RuntimeException(e)
     }
     initApplicationAR()
-    renderer.setActive(true)
+    renderer?.setActive(true)
+    glViewContainer.addView(glView)
     try {
       vuforiaAppSession.startAR(CAMERA_DIRECTION.CAMERA_DIRECTION_DEFAULT)
     } catch (e: SampleApplicationException) {
       Log.e("", e.string)
     }
     CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_CONTINUOUSAUTO)
+    progress.visibility = View.GONE
   }
 
   override fun onVuforiaUpdate(state: State?) {}
