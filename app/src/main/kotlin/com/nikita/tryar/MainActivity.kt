@@ -5,10 +5,9 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
-import android.view.View
+import android.support.v4.widget.NestedScrollView
 import android.view.WindowManager
 import com.nikita.tryar.ar.ARDelegate
-import android.widget.LinearLayout
 import com.nikita.tryar.ar.GLView
 import com.nikita.tryar.ar.MegaRenderer
 import com.nikita.tryar.item_info.ItemInfoDelegate
@@ -18,7 +17,7 @@ class MainActivity : Activity() {
   private lateinit var glView: GLView
   private lateinit var arDelegate: ARDelegate
 
-  private lateinit var bottomSheet: LinearLayout
+  private lateinit var bottomSheet: NestedScrollView
   private lateinit var iteminfoDelegate: ItemInfoDelegate
 
   private lateinit var testButton: FloatingActionButton
@@ -29,10 +28,10 @@ class MainActivity : Activity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    bottomSheet = findViewById(R.id.bottom_sheet) as LinearLayout
+    bottomSheet = findViewById(R.id.bottom_sheet) as NestedScrollView
     val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     iteminfoDelegate = ItemInfoDelegate(bottomSheet, bottomSheetBehavior)
+    iteminfoDelegate.init()
 
     testButton = findViewById(R.id.testButton) as FloatingActionButton
     testButton.setOnClickListener {

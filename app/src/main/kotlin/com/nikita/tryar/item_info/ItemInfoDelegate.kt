@@ -1,7 +1,9 @@
 package com.nikita.tryar.item_info
 
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.widget.NestedScrollView
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.nikita.tryar.Events
@@ -13,11 +15,11 @@ data class ItemInfo(val title: String,
                     val subtitle: String,
                     val description: String)
 
-class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<LinearLayout>) {
+class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<NestedScrollView>) {
 
-    val titleText = view.findViewById(R.id.item_title) as TextView
-    val subtitleText = view.findViewById(R.id.item_subtitle) as TextView
-    val descriptionText = view.findViewById(R.id.item_description) as TextView
+    private val titleText = view.findViewById(R.id.item_title) as TextView
+    private val subtitleText = view.findViewById(R.id.item_subtitle) as TextView
+    private val descriptionText = view.findViewById(R.id.item_description) as TextView
 
     val events = Events.recognitions
             .observeOn(AndroidSchedulers.mainThread())
@@ -26,10 +28,16 @@ class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<Lin
                 onEvent(it)
             }
 
+    fun init() {
+        behavior.peekHeight = 0
+        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
     private fun onEvent(id: String) {
         val data = getData(id)
         setContent(data)
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        behavior.peekHeight = 180
+        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun getData(id: String): ItemInfo {
