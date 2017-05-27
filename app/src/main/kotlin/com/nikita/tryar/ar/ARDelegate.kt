@@ -1,38 +1,72 @@
 package com.nikita.tryar.ar
 
 import android.app.Activity
-import com.nikita.tryar.BuildConfig
-import com.vuforia.INIT_FLAGS
-import com.vuforia.Vuforia
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import android.opengl.GLSurfaceView
+import com.nikita.ar.from_sample.SampleApplicationControl
+import com.nikita.ar.from_sample.SampleApplicationException
+import com.vuforia.State
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.opengles.GL10
 
-class ARDelegate(val activity: Activity, val glView: GLView) {
+class ARDelegate(val activity: Activity, val glView: GLView) : SampleApplicationControl {
 
-  fun initAR(): Single<Unit> {
-    return Single.fromCallable {
-      Vuforia.setInitParameters(activity, INIT_FLAGS.GL_30, BuildConfig.VUFORIA_KEY)
-      // Vuforia.init() blocks until an initialization step is
-      // complete, then it proceeds to the next step and reports
-      // progress in percents (0 ... 100%).
-      // If Vuforia.init() returns -1, it indicates an error.
-      // Initialization is done when progress has reached 100%.
-      while (Vuforia.init() < 100) {
-        /*NOP*/
+  fun onCreate() {
+    glView.setRenderer(object : GLSurfaceView.Renderer {
+      override fun onDrawFrame(gl: GL10?) {
+
       }
-    }
-      .doOnSuccess {
-        // 1 TODO trackers initialization
-        // 2 TODO textures, model loading
-        // 3 TODO Renderer initialization
-        // 4 TODO Camera initialization
+
+      override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+
       }
-      .subscribeOn(Schedulers.computation())
-      .observeOn(AndroidSchedulers.mainThread())
+
+      override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+
+      }
+    })
+  }
+
+  fun onResume() {
+    glView.onResume()
+  }
+
+  fun onPause() {
+    glView.onPause()
   }
 
   fun onDestroy() {
+
+  }
+
+  override fun doInitTrackers(): Boolean {
+    return false
+  }
+
+  override fun doLoadTrackersData(): Boolean {
+    return false
+  }
+
+  override fun doStartTrackers(): Boolean {
+    return false
+  }
+
+  override fun doStopTrackers(): Boolean {
+    return false
+  }
+
+  override fun doUnloadTrackersData(): Boolean {
+    return false
+  }
+
+  override fun doDeinitTrackers(): Boolean {
+    return false
+  }
+
+  override fun onInitARDone(e: SampleApplicationException?) {
+
+  }
+
+  override fun onVuforiaUpdate(state: State?) {
 
   }
 }
