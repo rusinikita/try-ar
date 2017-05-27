@@ -8,7 +8,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class ARSession(val activity: Activity, val glView: GLView) {
+class ARDelegate(val activity: Activity, val glView: GLView) {
 
   fun initAR(): Single<Unit> {
     return Single.fromCallable {
