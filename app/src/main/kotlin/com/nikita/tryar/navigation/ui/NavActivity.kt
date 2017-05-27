@@ -2,6 +2,7 @@ package com.nikita.tryar.navigation.ui
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -15,14 +16,16 @@ import com.nikita.tryar.navigation.base.*
 import java.io.FileWriter
 import java.util.*
 
+
 class NavActivity : Activity() {
+
+//    NIKITAFON - 38:2D:D1:B5:5A:2B
 
     private val ROOM_WIDTH = 10.86
     private val ROOM_LENGTH = 8.6
 
     private val REQUEST_ENABLE_BT = 1
     private val DETAIL = 2
-
 
     lateinit var bluetoothAdapter: BluetoothAdapter
 
@@ -103,40 +106,98 @@ class NavActivity : Activity() {
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
         bluetoothAdapter.startLeScan { device, rssi, scanRecord ->
-            runOnUiThread {
-                Log.d("qwe", device.toString())
-                if (device.name != null && device.name.contains("tag")) {
-                    var number = 0
-                    try {
-                        number = Integer.parseInt(device.name.substring(3, device.name.length))
-                    } catch (e: Exception) {
-                        Toast.makeText(this,
-                                "Зарегистрировано непонятное устройство", Toast.LENGTH_LONG).show()
-                        number = 0
-                    }
+            runOnUiThread { processBluetoothData2(device, rssi, scanRecord) }
+        }
+    }
 
-                    var myBluetoothDevice = room.getByNumber(number)
-                    if (myBluetoothDevice == null) {
-                        myBluetoothDevice = MyBluetoothDevice(device.name)
-                        room.add(myBluetoothDevice)
-                    }
-                    myBluetoothDevice.addRssi(rssi)
-                    if (room.deviceCount == 3) {// !!! == 3
-                        val p = trilateration.getTrilateratedPiont(room.getByNumber(1).meters,
-                                room.getByNumber(2).meters,
-                                room.getByNumber(3).meters)
-                        refreshRssis(p)
-                        val a1 = room.currentExpCount/* * room.getDeviceCount()*/
-                        val a2 = myMainHolder.expCount * room.deviceCount
-                        if (a1 == a2) {
-                            checkNearestExhibit(p)
-                        }
-                    } else {
-                        refreshRssis(null)
-                    }
-                    Collections.sort(room.myBluetoothDevices)
-                }
+    private fun processBluetoothData(device: BluetoothDevice, rssi: Int) {
+        Log.d("qwe", "my device: " + bluetoothAdapter.name + " address: " + bluetoothAdapter.address)
+        Log.d("qwe", "device: " + device.toString() + " signalStrength: " + rssi)
+        if (device.name != null && device.name.contains("tag")) {
+            Log.d("qwe", "device name: " + device.name.toString() + " ")
+
+            var number = 0
+            try {
+                number = Integer.parseInt(device.name.substring(3, device.name.length))
+            } catch (e: Exception) {
+                Toast.makeText(this,
+                        "Зарегистрировано непонятное устройство", Toast.LENGTH_LONG).show()
+                number = 0
             }
+
+            var myBluetoothDevice = room.getByNumber(number)
+            if (myBluetoothDevice == null) {
+                myBluetoothDevice = MyBluetoothDevice(device.name)
+                room.add(myBluetoothDevice)
+            }
+            myBluetoothDevice.addRssi(rssi)
+            if (room.deviceCount == 3) {// !!! == 3
+                val p = trilateration.getTrilateratedPiont(room.getByNumber(1).meters,
+                        room.getByNumber(2).meters,
+                        room.getByNumber(3).meters)
+                refreshRssis(p)
+                val a1 = room.currentExpCount/* * room.getDeviceCount()*/
+                val a2 = myMainHolder.expCount * room.deviceCount
+                if (a1 == a2) {
+                    checkNearestExhibit(p)
+                }
+            } else {
+                refreshRssis(null)
+            }
+            Collections.sort(room.myBluetoothDevices)
+        }
+    }
+
+    private fun processBluetoothData2(device: BluetoothDevice, rssi: Int, scanRecord: ByteArray) {
+        Log.d("qwe", "my device: " + bluetoothAdapter.name + " address: " + bluetoothAdapter.address+ " address: " + bluetoothAdapter.address)
+//        Log.d("qwe", "device: " + device.uuids.toString() + " signalStrength: " + rssi)
+
+
+        val badata = BleUtil.parseAdertisedData(scanRecord)
+        var deviceName = device.name
+        if (deviceName == null) {
+            deviceName = badata.name
+        }
+
+
+        Log.d("qwe", "device: " + device.address + " deviceName: " + deviceName)
+
+
+
+        if (device.address == "38:2D:D1:B5:5A:2B") {
+//            Log.d("qwe", "device name: " + device.name.toString() + " ")
+
+            Log.d("qwe", "device: " + device.address.toString() + " signalStrength: " + rssi)
+
+            var number = 0
+            try {
+                number = Integer.parseInt(device.name.substring(3, device.name.length))
+            } catch (e: Exception) {
+                Toast.makeText(this,
+                        "Зарегистрировано непонятное устройство", Toast.LENGTH_LONG).show()
+                number = 0
+            }
+
+            var myBluetoothDevice = room.getByNumber(number)
+            if (myBluetoothDevice == null) {
+                myBluetoothDevice = MyBluetoothDevice(device.name)
+                room.add(myBluetoothDevice)
+            }
+            myBluetoothDevice.addRssi(rssi)
+            if (room.deviceCount == 3) {// !!! == 3
+                val p = trilateration.getTrilateratedPiont(room.getByNumber(1).meters,
+                        room.getByNumber(2).meters,
+                        room.getByNumber(3).meters)
+                refreshRssis(p)
+                val a1 = room.currentExpCount/* * room.getDeviceCount()*/
+                val a2 = myMainHolder.expCount * room.deviceCount
+                if (a1 == a2) {
+                    checkNearestExhibit(p)
+                }
+            } else {
+                refreshRssis(null)
+            }
+            Collections.sort(room.myBluetoothDevices)
         }
     }
 
