@@ -1,16 +1,15 @@
 package com.nikita.tryar
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.NestedScrollView
-import android.view.WindowManager
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.view.WindowManager
 import com.nikita.tryar.ar.ARDelegate
-import com.nikita.tryar.ar.GLView
 import com.nikita.tryar.item_info.ItemInfoDelegate
 import io.reactivex.disposables.CompositeDisposable
 
@@ -44,6 +43,14 @@ class MainActivity : Activity() {
     progress = findViewById(R.id.progress_bar) as View
     arDelegate = ARDelegate(this, glViewContainer, progress)
     arDelegate.onCreate()
+    setupWindow()
+  }
+
+  private fun setupWindow() {
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    window.setFlags(
+      WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+      WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
   }
 
   override fun onPause() {
