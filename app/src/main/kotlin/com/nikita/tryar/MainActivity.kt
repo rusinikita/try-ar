@@ -7,8 +7,8 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.view.View
 import android.view.WindowManager
+import com.nikita.tryar.ar.ARDelegate
 import android.widget.LinearLayout
-import com.nikita.tryar.ar.ARSession
 import com.nikita.tryar.ar.GLView
 import com.nikita.tryar.ar.MegaRenderer
 import com.nikita.tryar.item_info.ItemInfoDelegate
@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : Activity() {
   private lateinit var glView: GLView
-  private lateinit var arSession: ARSession
+  private lateinit var arDelegate: ARDelegate
 
   private lateinit var bottomSheet: LinearLayout
   private lateinit var iteminfoDelegate: ItemInfoDelegate
@@ -41,9 +41,9 @@ class MainActivity : Activity() {
 
     glView = findViewById(R.id.gl_view) as GLView
     glView.setRenderer(MegaRenderer(emptyList()))
-    arSession = ARSession(this, glView)
+    arDelegate = ARDelegate(this, glView)
     setupWindow()
-    startARInitialization();
+    startARInitialization()
   }
 
   private fun setupWindow() {
@@ -55,7 +55,7 @@ class MainActivity : Activity() {
 
   private fun startARInitialization() {
     /*
-    arSession.initAR().subscribe({ _, error ->
+    arDelegate.initAR().subscribe({ _, error ->
       error?.let { Snackbar.make(glView, "AR init failed, try to restart", Snackbar.LENGTH_INDEFINITE).show() }
     })
     */
@@ -73,6 +73,6 @@ class MainActivity : Activity() {
 
   override fun onDestroy() {
     super.onDestroy()
-    arSession.onDestroy()
+    arDelegate.onDestroy()
   }
 }
