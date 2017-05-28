@@ -10,6 +10,7 @@ import com.nikita.ar.from_sample.SampleApplicationControl
 import com.nikita.ar.from_sample.SampleApplicationException
 import com.nikita.ar.from_sample.SampleApplicationSession
 import com.nikita.ar.from_sample.utils.Texture
+import com.nikita.tryar.R
 import com.vuforia.*
 import com.vuforia.CameraDevice.CAMERA_DIRECTION
 import java.util.*
@@ -31,6 +32,7 @@ class ARDelegate(private val activity: Activity,
     switchButton.setOnClickListener {
       isAr = !isAr
       needSwitch = true
+      switchButton.setImageResource(if (isAr) R.drawable.icon_info else R.drawable.icon_3d)
     }
 
     vuforiaAppSession.initAR(activity, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
