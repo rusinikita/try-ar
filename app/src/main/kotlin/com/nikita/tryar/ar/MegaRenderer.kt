@@ -254,8 +254,6 @@ class MegaRenderer(private val activity: Activity,
         SampleUtils.checkGLError("Render Frame")
       } else {
 
-        Events.recognitions.onNext("model")
-
         val arModelScale = 0.012f
 
         val textureIndex = 1 // TODO second model
