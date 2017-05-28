@@ -108,12 +108,6 @@ class ARDelegate(private val activity: Activity,
 
     if (!objectTracker.activateDataSet(currentDataset)) return false
 
-    if (isAr) {
-      (0..currentDataset!!.numTrackables)
-        .map { currentDataset!!.getTrackable(it) }
-        .forEach { it.startExtendedTracking() }
-    }
-
     return true
   }
 
