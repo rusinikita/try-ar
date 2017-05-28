@@ -10,9 +10,11 @@ import com.nikita.ar.from_sample.SampleAppRenderer
 import com.nikita.ar.from_sample.SampleAppRendererControl
 import com.nikita.ar.from_sample.SampleApplicationSession
 import com.nikita.ar.from_sample.utils.CubeShaders
+import com.nikita.ar.from_sample.utils.SampleApplication3DModel
 import com.nikita.ar.from_sample.utils.SampleUtils
 import com.nikita.ar.from_sample.utils.Texture
 import com.vuforia.*
+import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -44,6 +46,8 @@ class MegaRenderer(private val activity: Activity,
   // ratio to apply so that the augmentation surrounds the vumark
   private val VUMARK_SCALE = 1.02f
   private var currentVumarkIdOnCard: String? = null
+
+  private var arModel: SampleApplication3DModel? = null
 
   // Called when the surface is created or recreated.
   override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
@@ -112,7 +116,15 @@ class MegaRenderer(private val activity: Activity,
     calphaHandle = GLES20.glGetUniformLocation(shaderProgramID,
       "calpha")
 
-    // TODO Hide the Loading Dialog
+    if (arModel == null) {
+      try {
+        arModel = SampleApplication3DModel()
+        arModel!!.loadModel(activity.resources.assets, "Buildings.txt")
+      } catch (e: IOException) {
+        arModel = null
+        Log.e("", e.message)
+      }
+    }
   }
 
   fun setActive(active: Boolean) {
@@ -184,8 +196,6 @@ class MegaRenderer(private val activity: Activity,
 
         if (isMainVuMark) {
           markerValue = instanceIdToValue(instanceId)
-          val instanceImage = vmTgt.instanceImage
-
           if (!markerValue.equals(currentVumarkIdOnCard, ignoreCase = true)) {
             blinkVumark(true)
           }
@@ -241,8 +251,44 @@ class MegaRenderer(private val activity: Activity,
         GLES20.glDisableVertexAttribArray(vertexHandle)
         GLES20.glDisableVertexAttribArray(textureCoordHandle)
         SampleUtils.checkGLError("Render Frame")
-      }
+      } else {
 
+        val arModelScale = 0.012f
+
+        val textureIndex = 1 // TODO second model
+
+        // deal with the modelview and projection matrices
+        val modelViewProjection = FloatArray(16)
+
+        Matrix.rotateM(modelViewMatrix, 0, 90.0f, 1.0f, 0f, 0f)
+        Matrix.scaleM(modelViewMatrix, 0, arModelScale, arModelScale, arModelScale)
+
+        Matrix.multiplyMM(modelViewProjection, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+        // activate the shader program and bind the vertex/normal/tex coords
+        GLES20.glUseProgram(shaderProgramID)
+
+        GLES20.glDisable(GLES20.GL_CULL_FACE)
+        GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
+          false, 0, arModel!!.vertices)
+        GLES20.glVertexAttribPointer(textureCoordHandle, 2,
+          GLES20.GL_FLOAT, false, 0, arModel!!.texCoords)
+
+        GLES20.glEnableVertexAttribArray(vertexHandle)
+        GLES20.glEnableVertexAttribArray(textureCoordHandle)
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,
+          textures[textureIndex].mTextureID[0])
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false,
+          modelViewProjection, 0)
+        GLES20.glUniform1i(texSampler2DHandle, 0)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
+          arModel!!.numObjectVertex)
+
+        SampleUtils.checkGLError("Renderer DrawBuildings")
+
+      }
     }
 
     if (gotVuMark) {

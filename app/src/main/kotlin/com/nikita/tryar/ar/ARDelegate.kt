@@ -31,6 +31,7 @@ class ARDelegate(private val activity: Activity, private val glViewContainer: Vi
   // for rendering.
   private fun loadTextures() {
     textures.add(Texture.loadTextureFromApk("vumark_texture.png", activity.assets))
+    textures.add(Texture.loadTextureFromApk("Buildings.jpeg", activity.assets))
   }
 
   // Initializes AR application components.
@@ -93,7 +94,15 @@ class ARDelegate(private val activity: Activity, private val glViewContainer: Vi
 
     if (currentDataset == null) return false
 
-    return currentDataset!!.load("Vuforia.xml", STORAGE_TYPE.STORAGE_APPRESOURCE) && objectTracker.activateDataSet(currentDataset)
+    if (!currentDataset!!.load("Vuforia.xml", STORAGE_TYPE.STORAGE_APPRESOURCE)) return false
+
+    if (!objectTracker.activateDataSet(currentDataset)) return false
+
+    (1..currentDataset!!.numTrackables)
+      .map { currentDataset!!.getTrackable(it) }
+      .forEach { it.startExtendedTracking() }
+
+    return true
   }
 
   override fun doStartTrackers(): Boolean {
