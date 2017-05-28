@@ -8,7 +8,6 @@ import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -34,6 +33,7 @@ class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<Nes
 
     val events = Events.recognitions
             .observeOn(AndroidSchedulers.mainThread())
+            .distinctUntilChanged()
             .subscribeOn(Schedulers.io())
             .subscribe {
                 onEvent(it)
@@ -58,14 +58,26 @@ class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<Nes
     }
 
     private fun getData(id: String): ItemInfo {
-        return when (id.toLowerCase()) {
-            "test" -> ItemInfo(
+        return when (id) {
+            "VuMark00" -> ItemInfo(
                     title = "Title",
                     subtitle = "Subtitle",
                     description = "Description",
                     instagramUrl = "",
                     photos = null)
-            "cheer" -> ItemInfo(
+            "VuMark01" -> ItemInfo(
+                    title = "Title",
+                    subtitle = "Subtitle",
+                    description = "Description",
+                    instagramUrl = "",
+                    photos = null)
+            "VuMark02" -> ItemInfo(
+                    title = "Title",
+                    subtitle = "Subtitle",
+                    description = "Description",
+                    instagramUrl = "",
+                    photos = null)
+            "VuMark03" -> ItemInfo(
                     title = "Стул разработчика",
                     subtitle = "Четыре исследователя обнаружили этот стул в 201 кабинете Фабрики, в 2017 году.",
                     description = "Этот стул примичателен тем, что на нём сидел один из разработчиков этого приложения. Делал он это с 27.05.2017 по 28.05.2017, после чего связь со стулом была потеряна и они больше не виделись.",
