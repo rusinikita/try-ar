@@ -8,14 +8,17 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.NestedScrollView
 import android.util.Log
-import android.view.WindowManager
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import com.nikita.tryar.ar.ARDelegate
 import com.nikita.tryar.item_info.ItemInfoDelegate
 import io.reactivex.disposables.CompositeDisposable
-import org.altbeacon.beacon.*
+import org.altbeacon.beacon.BeaconConsumer
+import org.altbeacon.beacon.BeaconManager
+import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.Region
 
 const val REDMI_3_BEACON = "2dc60a0a-c9b9-41f2-9bf9-608daae095f0"
 const val BEACON_160302 = "0x34316463613633666339"
@@ -105,7 +108,7 @@ class MainActivity : Activity(), BeaconConsumer {
   }
 
   private fun showNotification(id: String, distance: Double) {
-    if (id == BEACON_160302 && distance in 0..1) {
+    if (id == BEACON_160302 && (distance > 0 && distance < 0.3)) {
       regionNotification.text = "Вы находитесь в зоне: Стол разработчиков"
       regionNotification.visibility = View.VISIBLE
     } else if (id == BEACON_160225 && distance in 0..1) {
