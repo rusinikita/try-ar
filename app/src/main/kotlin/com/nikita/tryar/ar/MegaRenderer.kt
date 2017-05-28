@@ -13,6 +13,7 @@ import com.nikita.ar.from_sample.utils.CubeShaders
 import com.nikita.ar.from_sample.utils.SampleApplication3DModel
 import com.nikita.ar.from_sample.utils.SampleUtils
 import com.nikita.ar.from_sample.utils.Texture
+import com.nikita.tryar.Events
 import com.vuforia.*
 import java.io.IOException
 import java.nio.charset.Charset
@@ -253,6 +254,8 @@ class MegaRenderer(private val activity: Activity,
         SampleUtils.checkGLError("Render Frame")
       } else {
 
+        Events.recognitions.onNext("model")
+
         val arModelScale = 0.012f
 
         val textureIndex = 1 // TODO second model
@@ -295,7 +298,7 @@ class MegaRenderer(private val activity: Activity,
       // If we have a detection, let's make sure
       // the card is visible
       currentVumarkIdOnCard = markerValue
-      // TODO show mark info
+      Events.recognitions.onNext(currentVumarkIdOnCard)
     } else {
       // We reset the state of the animation so that
       // it triggers next time a vumark is detected

@@ -8,7 +8,6 @@ import android.support.v4.widget.NestedScrollView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -34,6 +33,7 @@ class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<Nes
 
     val events = Events.recognitions
             .observeOn(AndroidSchedulers.mainThread())
+            .distinctUntilChanged()
             .subscribeOn(Schedulers.io())
             .subscribe {
                 onEvent(it)
@@ -58,14 +58,27 @@ class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<Nes
     }
 
     private fun getData(id: String): ItemInfo {
-        return when (id.toLowerCase()) {
-            "test" -> ItemInfo(
-                    title = "Title",
-                    subtitle = "Subtitle",
-                    description = "Description",
-                    instagramUrl = "",
-                    photos = null)
-            "cheer" -> ItemInfo(
+        return when (id) {
+            "VuMark00" -> ItemInfo(
+                    title = "Доска",
+                    subtitle = "Отличная доска для хакатонов",
+                    description = "Можно что-нибудь на ней написать",
+                    instagramUrl = "https://www.instagram.com/p/BUl0Sw8Bhjm/",
+                    photos = listOf(R.drawable.stand1, R.drawable.stand2, R.drawable.stand3))
+            "VuMark01" -> ItemInfo(
+                    title = "Телевизор",
+                    subtitle = "Отличный телек",
+                    description = "Диагональ то какая!",
+                    instagramUrl = "https://www.instagram.com/explore/tags/angelhack/",
+                    photos = listOf(R.drawable.tv1, R.drawable.tv2, R.drawable.tv3))
+            "VuMark02" -> ItemInfo(
+                    title = "Canon LV-8235 UST",
+                    subtitle = "Мультимедийный проектор",
+                    description = "Универсальный ультракороткофокусный LV-8235 UST – 3D-совместимый с поддержкой разрешения WXGA – дает большое изображение с короткого расстояния проекции, что идеально для применения в бизнес- или учебной среде.",
+                    instagramUrl = "https://www.instagram.com/canon.russia/?hl=ru",
+                    photos = listOf(R.drawable.obj_1_1, R.drawable.obj_1_2, R.drawable.obj_1_3, R.drawable.obj_1_4))
+
+            "VuMark03" -> ItemInfo(
                     title = "Стул разработчика",
                     subtitle = "Четыре исследователя обнаружили этот стул в 201 кабинете Фабрики, в 2017 году.",
                     description = "Этот стул примичателен тем, что на нём сидел один из разработчиков этого приложения. Делал он это с 27.05.2017 по 28.05.2017, после чего связь со стулом была потеряна и они больше не виделись.",
@@ -88,9 +101,12 @@ class ItemInfoDelegate(view: View, private val behavior: BottomSheetBehavior<Nes
             }
 
             if (photos != null && photos.isNotEmpty()) {
-                photoRecycler.adapter = PhotoAdapter(photos)
+                val photoAdapter = PhotoAdapter(photos)
+                photoRecycler.adapter = photoAdapter
+                photoAdapter.notifyDataSetChanged()
+                photoRecycler.visibility = View.VISIBLE
             } else {
-                photoContainer.visibility = View.GONE
+                photoContainer.visibility = View.INVISIBLE
             }
 
         }
