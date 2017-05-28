@@ -2,6 +2,7 @@ package com.nikita.tryar.ar
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.support.design.widget.FloatingActionButton
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -13,15 +14,24 @@ import com.vuforia.*
 import com.vuforia.CameraDevice.CAMERA_DIRECTION
 import java.util.*
 
-class ARDelegate(private val activity: Activity, private val glViewContainer: ViewGroup, private val progress: View) : SampleApplicationControl {
+class ARDelegate(private val activity: Activity,
+                 private val glViewContainer: ViewGroup,
+                 private val progress: View,
+                 private val switchButton: FloatingActionButton) : SampleApplicationControl {
   private val vuforiaAppSession = SampleApplicationSession(this)
   private val textures = Vector<Texture>()
   private var glView: GLView? = null
   private var renderer: MegaRenderer? = null
   private var currentDataset: DataSet? = null
+  private var isAr = false
+  private var needSwitch = false
 
   fun onCreate() {
     progress.visibility = View.VISIBLE
+    switchButton.setOnClickListener {
+      isAr = !isAr
+      needSwitch = true
+    }
 
     vuforiaAppSession.initAR(activity, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     loadTextures()
@@ -94,13 +104,15 @@ class ARDelegate(private val activity: Activity, private val glViewContainer: Vi
 
     if (currentDataset == null) return false
 
-    if (!currentDataset!!.load("Vuforia.xml", STORAGE_TYPE.STORAGE_APPRESOURCE)) return false
+    if (!currentDataset!!.load(if (isAr) "StonesAndChips.xml" else "Vuforia.xml", STORAGE_TYPE.STORAGE_APPRESOURCE)) return false
 
     if (!objectTracker.activateDataSet(currentDataset)) return false
 
-    (1..currentDataset!!.numTrackables)
-      .map { currentDataset!!.getTrackable(it) }
-      .forEach { it.startExtendedTracking() }
+    if (isAr) {
+      (0..currentDataset!!.numTrackables)
+        .map { currentDataset!!.getTrackable(it) }
+        .forEach { it.startExtendedTracking() }
+    }
 
     return true
   }
@@ -156,5 +168,18 @@ class ARDelegate(private val activity: Activity, private val glViewContainer: Vi
     progress.visibility = View.GONE
   }
 
-  override fun onVuforiaUpdate(state: State?) {}
+  override fun onVuforiaUpdate(state: State?) {
+    if (needSwitch) {
+      needSwitch = false
+      val tm = TrackerManager.getInstance()
+      val ot = tm.getTracker(ObjectTracker.getClassType()) as? ObjectTracker
+      if (ot == null || currentDataset == null || ot.getActiveDataSet(0) == null) {
+        Log.d("", "Failed to swap datasets")
+        return
+      }
+
+      doUnloadTrackersData()
+      doLoadTrackersData()
+    }
+  }
 }

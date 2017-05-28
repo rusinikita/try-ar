@@ -21,7 +21,7 @@ class MainActivity : Activity() {
   private lateinit var bottomSheet: NestedScrollView
   private lateinit var iteminfoDelegate: ItemInfoDelegate
 
-  private lateinit var testButton: FloatingActionButton
+  private lateinit var switchButton: FloatingActionButton
 
   private val disposable = CompositeDisposable()
 
@@ -34,14 +34,11 @@ class MainActivity : Activity() {
     iteminfoDelegate = ItemInfoDelegate(bottomSheet, bottomSheetBehavior, this)
     iteminfoDelegate.init()
 
-    testButton = findViewById(R.id.testButton) as FloatingActionButton
-    testButton.setOnClickListener {
-      Events.recognitions.onNext("cheer")
-    }
+    switchButton = findViewById(R.id.testButton) as FloatingActionButton
 
     glViewContainer = findViewById(R.id.gl_view_container) as ViewGroup
     progress = findViewById(R.id.progress_bar) as View
-    arDelegate = ARDelegate(this, glViewContainer, progress)
+    arDelegate = ARDelegate(this, glViewContainer, progress, switchButton)
     arDelegate.onCreate()
     setupWindow()
   }
