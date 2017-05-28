@@ -108,7 +108,7 @@ class MainActivity : Activity(), BeaconConsumer {
   }
 
   private fun showNotification(id: String, distance: Double) {
-    if (id == BEACON_160302 && (distance > 0 && distance < 0.3)) {
+    if (id == BEACON_160302 && (distance > 0 && distance < 1)) {
       regionNotification.text = "Вы находитесь в зоне: Стол разработчиков"
       regionNotification.visibility = View.VISIBLE
     } else if (id == BEACON_160225 && distance in 0..1) {
