@@ -68,8 +68,7 @@ public class SampleAppRenderer {
     private boolean mIsPortrait = false;
 
     public SampleAppRenderer(SampleAppRendererControl renderingInterface, Activity activity, int deviceMode,
-                             boolean stereo, float nearPlane, float farPlane)
-    {
+                             boolean stereo, float nearPlane, float farPlane) {
         mActivity = activity;
 
         mRenderingInterface = renderingInterface;

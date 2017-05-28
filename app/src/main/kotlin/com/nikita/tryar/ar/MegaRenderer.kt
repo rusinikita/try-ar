@@ -5,13 +5,16 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.util.Log
+import com.nikita.ar.from_sample.Plane
 import com.nikita.ar.from_sample.SampleAppRenderer
 import com.nikita.ar.from_sample.SampleAppRendererControl
 import com.nikita.ar.from_sample.SampleApplicationSession
 import com.nikita.ar.from_sample.utils.CubeShaders
+import com.nikita.ar.from_sample.utils.SampleApplication3DModel
 import com.nikita.ar.from_sample.utils.SampleUtils
 import com.nikita.ar.from_sample.utils.Texture
 import com.vuforia.*
+import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -19,11 +22,11 @@ import javax.microedition.khronos.opengles.GL10
 
 class MegaRenderer(private val activity: Activity,
                    private val session: SampleApplicationSession) : GLSurfaceView.Renderer, SampleAppRendererControl {
-  lateinit var textures: Vector<Texture>
+  var textures: Vector<Texture> = Vector()
 
-  private lateinit var vuforiaAppSession: SampleApplicationSession
-  private lateinit var mSampleAppRenderer: SampleAppRenderer
-  private lateinit var mActivity: Activity
+  // SampleAppRenderer used to encapsulate the use of RenderingPrimitives setting
+  // the device mode AR/VR and stereo mode
+  private var mSampleAppRenderer = SampleAppRenderer(this, activity, Device.MODE.MODE_AR, false, .01f, 100f)
 
   private var shaderProgramID: Int = 0
   private var vertexHandle: Int = 0
@@ -34,9 +37,9 @@ class MegaRenderer(private val activity: Activity,
 
   private var mRenderer: Renderer? = null
 
-  private var t0: Double = 0.toDouble()
+  private var t0: Double = -1.0
 
-  private lateinit var mPlaneObj: Plane
+  private val mPlaneObj = Plane()
 
   private var mIsActive = false
 
@@ -44,14 +47,7 @@ class MegaRenderer(private val activity: Activity,
   private val VUMARK_SCALE = 1.02f
   private var currentVumarkIdOnCard: String? = null
 
-  init {
-    t0 = -1.0
-    mPlaneObj = Plane()
-
-    // SampleAppRenderer used to encapsulate the use of RenderingPrimitives setting
-    // the device mode AR/VR and stereo mode
-    mSampleAppRenderer = SampleAppRenderer(this, mActivity, Device.MODE.MODE_AR, false, .01f, 100f)
-  }
+  private var arModel: SampleApplication3DModel? = null
 
   // Called when the surface is created or recreated.
   override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
@@ -59,7 +55,7 @@ class MegaRenderer(private val activity: Activity,
 
     // Call Vuforia function to (re)initialize rendering after first use
     // or after OpenGL ES context was lost (e.g. after onPause/onResume):
-    vuforiaAppSession.onSurfaceCreated()
+    session.onSurfaceCreated()
 
     mSampleAppRenderer.onSurfaceCreated()
   }
@@ -78,7 +74,7 @@ class MegaRenderer(private val activity: Activity,
     Log.d("", "GLRenderer.onSurfaceChanged")
 
     // Call Vuforia function to handle render surface size changes:
-    vuforiaAppSession.onSurfaceChanged(width, height)
+    session.onSurfaceChanged(width, height)
 
     // RenderingPrimitives to be updated when some rendering change is done
     mSampleAppRenderer.onConfigurationChanged(mIsActive)
@@ -91,10 +87,7 @@ class MegaRenderer(private val activity: Activity,
   private fun initRendering() {
     mRenderer = Renderer.getInstance()
 
-    GLES20.glClearColor(0.0f, 0.0f, 0.0f, if (Vuforia.requiresAlpha())
-      0.0f
-    else
-      1.0f)
+    GLES20.glClearColor(0.0f, 0.0f, 0.0f, if (Vuforia.requiresAlpha()) 0.0f else 1.0f)
 
     for (t in textures) {
       GLES20.glGenTextures(1, t.mTextureID, 0)
@@ -123,7 +116,15 @@ class MegaRenderer(private val activity: Activity,
     calphaHandle = GLES20.glGetUniformLocation(shaderProgramID,
       "calpha")
 
-    // TODO Hide the Loading Dialog
+    if (arModel == null) {
+      try {
+        arModel = SampleApplication3DModel()
+        arModel!!.loadModel(activity.resources.assets, "Buildings.txt")
+      } catch (e: IOException) {
+        arModel = null
+        Log.e("", e.message)
+      }
+    }
   }
 
   fun setActive(active: Boolean) {
@@ -195,10 +196,7 @@ class MegaRenderer(private val activity: Activity,
 
         if (isMainVuMark) {
           markerValue = instanceIdToValue(instanceId)
-          val instanceImage = vmTgt.instanceImage
-
           if (!markerValue.equals(currentVumarkIdOnCard, ignoreCase = true)) {
-            // TODO hide card
             blinkVumark(true)
           }
         }
@@ -253,15 +251,51 @@ class MegaRenderer(private val activity: Activity,
         GLES20.glDisableVertexAttribArray(vertexHandle)
         GLES20.glDisableVertexAttribArray(textureCoordHandle)
         SampleUtils.checkGLError("Render Frame")
-      }
+      } else {
 
+        val arModelScale = 0.012f
+
+        val textureIndex = 1 // TODO second model
+
+        // deal with the modelview and projection matrices
+        val modelViewProjection = FloatArray(16)
+
+        Matrix.rotateM(modelViewMatrix, 0, 90.0f, 1.0f, 0f, 0f)
+        Matrix.scaleM(modelViewMatrix, 0, arModelScale, arModelScale, arModelScale)
+
+        Matrix.multiplyMM(modelViewProjection, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+        // activate the shader program and bind the vertex/normal/tex coords
+        GLES20.glUseProgram(shaderProgramID)
+
+        GLES20.glDisable(GLES20.GL_CULL_FACE)
+        GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
+          false, 0, arModel!!.vertices)
+        GLES20.glVertexAttribPointer(textureCoordHandle, 2,
+          GLES20.GL_FLOAT, false, 0, arModel!!.texCoords)
+
+        GLES20.glEnableVertexAttribArray(vertexHandle)
+        GLES20.glEnableVertexAttribArray(textureCoordHandle)
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,
+          textures[textureIndex].mTextureID[0])
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false,
+          modelViewProjection, 0)
+        GLES20.glUniform1i(texSampler2DHandle, 0)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
+          arModel!!.numObjectVertex)
+
+        SampleUtils.checkGLError("Renderer DrawBuildings")
+
+      }
     }
 
     if (gotVuMark) {
       // If we have a detection, let's make sure
       // the card is visible
-      // TODO show mark info
       currentVumarkIdOnCard = markerValue
+      // TODO show mark info
     } else {
       // We reset the state of the animation so that
       // it triggers next time a vumark is detected

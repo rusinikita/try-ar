@@ -7,16 +7,25 @@
     android:layout_height="match_parent"
     tools:context="com.nikita.tryar.MainActivity">
 
-    <com.nikita.tryar.ar.GLView
-        android:id="@+id/gl_view"
+    <FrameLayout
+        android:id="@+id/gl_view_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="?android:attr/progressBarStyle"
+        android:visibility="visible"
+        />
 
     <include layout="@layout/bottom_sheet_item_info"
         android:id="@+id/bottom_sheet" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/testButton"
+        android:id="@+id/switchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
