@@ -10,9 +10,7 @@ import android.support.v4.widget.NestedScrollView
 import android.util.Log
 import android.view.WindowManager
 import android.view.View
-import android.widget.Toast
 import android.view.ViewGroup
-import android.view.WindowManager
 import com.nikita.tryar.ar.ARDelegate
 import com.nikita.tryar.item_info.ItemInfoDelegate
 import io.reactivex.disposables.CompositeDisposable
@@ -53,7 +51,7 @@ class MainActivity : Activity(), BeaconConsumer {
     iteminfoDelegate = ItemInfoDelegate(bottomSheet, bottomSheetBehavior, this)
     iteminfoDelegate.init()
 
-    switchButton = findViewById(R.id.testButton) as FloatingActionButton
+    switchButton = findViewById(R.id.switchButton) as FloatingActionButton
 
     glViewContainer = findViewById(R.id.gl_view_container) as ViewGroup
     progress = findViewById(R.id.progress_bar) as View
