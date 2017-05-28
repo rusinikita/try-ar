@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.nikita.tryar.ar.ARDelegate
 import com.nikita.tryar.item_info.ItemInfoDelegate
 import io.reactivex.disposables.CompositeDisposable
@@ -33,6 +34,8 @@ class MainActivity : Activity(), BeaconConsumer {
 
   private val disposable = CompositeDisposable()
 
+  private lateinit var regionNotification: TextView
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
@@ -45,6 +48,8 @@ class MainActivity : Activity(), BeaconConsumer {
     beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19"))
     beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-20v"))
     beaconManager.bind(this)
+
+    regionNotification = findViewById(R.id.region_notification) as TextView
 
     bottomSheet = findViewById(R.id.bottom_sheet) as NestedScrollView
     val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -86,13 +91,28 @@ class MainActivity : Activity(), BeaconConsumer {
   override fun onBeaconServiceConnect() {
     beaconManager.addRangeNotifier { beacons, region ->
       beacons.forEach {
-          Log.e("RANGING","Distance - ${it.distance}, Id1 - ${it.id1}")
+        Log.e("RANGING","Distance - ${it.distance}, Id1 - ${it.id1}")
+        regionNotification.post {
+          showNotification(it.id1.toString(), it.distance)
+        }
       }
     }
     try {
       beaconManager.startRangingBeaconsInRegion(Region("rangingid", null, null, null))
     } catch (e: RemoteException) {
       Log.e("QQQ-QQQ", e.localizedMessage)
+    }
+  }
+
+  private fun showNotification(id: String, distance: Double) {
+    if (id == BEACON_160302 && distance in 0..1) {
+      regionNotification.text = "Вы находитесь в зоне: Стол разработчиков"
+      regionNotification.visibility = View.VISIBLE
+    } else if (id == BEACON_160225 && distance in 0..1) {
+      regionNotification.text = "Вы находитесь в зоне: МЫ НЕ ПРИДУМАЛИ ПОКА"
+      regionNotification.visibility = View.VISIBLE
+    } else {
+      regionNotification.visibility = View.GONE
     }
   }
 }

@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#16748e</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#b13f66</color>
+    <color name="colorAccent">#16748e</color>
 
     <!--Bottom sheet-->
     <color name="background">#ffffff</color>
@@ -10,4 +10,8 @@
     <color name="title">#454545</color>
     <color name="subtitle">#454545</color>
     <color name="text">#646464</color>
+
+    <!--region notification-->
+    <color name="region_notif_background">#9616748e</color>
+    <color name="region_notif_text">#ffffff</color>
 </resources>
