@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.nikita.tryar.R
+import com.squareup.picasso.Picasso
 
 class PhotoViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
     private val image = view.findViewById(R.id.photo_item) as ImageView
 
     fun bind(@DrawableRes imageId: Int) = with(view) {
-        image.setImageResource(imageId)
+        Picasso.with(view.context).load(imageId).into(image)
+//        image.setImageResource(imageId)
     }
 }
 
